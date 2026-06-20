@@ -1,48 +1,54 @@
-[gd_scene format=3 uid="uid://dm5sbw6au6ym1"]
+[gd_scene load_steps=6 format=2]
 
-[ext_resource type="PackedScene" uid="uid://crr2sbsgmu8hy" path="res://Scenes/Player.tscn" id="1_34er5"]
+[ext_resource path="res://Scenes/player.tscn" type="PackedScene" id=1]
 
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_45flt"]
+[sub_resource type="CylinderShape" id=1]
 height = 0.1
 radius = 20.0
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_45flt"]
+[sub_resource type="CylinderMesh" id=2]
 top_radius = 20.0
 bottom_radius = 20.0
 height = 0.1
+rings = 0
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_45flt"]
+[sub_resource type="SphereShape" id=3]
 
-[sub_resource type="SphereMesh" id="SphereMesh_45flt"]
+[sub_resource type="SphereMesh" id=4]
 
-[node name="Node3D" type="Node3D" unique_id=1296995982]
+[node name="match" type="Spatial"]
 
-[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=2033174536]
+[node name="Static" type="Node" parent="."]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=1293444176]
-shape = SubResource("CylinderShape3D_45flt")
+[node name="Sun" type="DirectionalLight" parent="Static"]
+transform = Transform( 0.9569, -0.205357, 0.205357, 0, 0.707107, 0.707107, -0.290418, -0.67663, 0.67663, 0, 10, 0 )
+light_color = Color( 0.870588, 0.847059, 0.819608, 1 )
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D" unique_id=748408650]
-mesh = SubResource("CylinderMesh_45flt")
-
-[node name="RigidBody3D" type="RigidBody3D" parent="." unique_id=1643603454]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.62468, 0)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D" unique_id=630678370]
-shape = SubResource("SphereShape3D_45flt")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D" unique_id=775946698]
-mesh = SubResource("SphereMesh_45flt")
-
-[node name="Sun" type="DirectionalLight3D" parent="." unique_id=1018276965]
-transform = Transform3D(1, 0, 0, 0, 0.76662445, 0.64209574, 0, -0.64209574, 0.76662445, 0, 9.059549, 0)
-light_color = Color(0.87, 0.84825003, 0.8178, 1)
-shadow_enabled = true
-
-[node name="Backlight" type="DirectionalLight3D" parent="Sun" unique_id=1148535787]
-transform = Transform3D(1, 0, 0, 0, -1, 8.742278e-08, 0, -8.742278e-08, -1, 0, 2, 0)
-light_color = Color(0.9, 0.96833336, 1, 1)
+[node name="Backlight" type="DirectionalLight" parent="Static/Sun"]
+transform = Transform( 1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 2, 0 )
+light_color = Color( 0.901961, 0.968627, 1, 1 )
 light_energy = 0.1
 
-[node name="Player" parent="." unique_id=947372061 instance=ExtResource("1_34er5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 17.5)
+[node name="Rotating" type="Node" parent="."]
+
+[node name="StaticBody" type="StaticBody" parent="Rotating"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Rotating/StaticBody"]
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Rotating/StaticBody"]
+mesh = SubResource( 2 )
+
+[node name="player" parent="Rotating" instance=ExtResource( 1 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 17.5 )
+
+[node name="Dynamic" type="Node" parent="."]
+
+[node name="RigidBody" type="RigidBody" parent="Dynamic"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Dynamic/RigidBody"]
+shape = SubResource( 3 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Dynamic/RigidBody"]
+mesh = SubResource( 4 )
