@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://dm5sbw6au6ym1"]
+
+[ext_resource type="PackedScene" uid="uid://crr2sbsgmu8hy" path="res://Scenes/Player.tscn" id="1_34er5"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_45flt"]
+height = 0.1
+radius = 20.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_45flt"]
+top_radius = 20.0
+bottom_radius = 20.0
+height = 0.1
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_45flt"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_45flt"]
+
+[node name="Node3D" type="Node3D" unique_id=1296995982]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=2033174536]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=1293444176]
+shape = SubResource("CylinderShape3D_45flt")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D" unique_id=748408650]
+mesh = SubResource("CylinderMesh_45flt")
+
+[node name="RigidBody3D" type="RigidBody3D" parent="." unique_id=1643603454]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.62468, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D" unique_id=630678370]
+shape = SubResource("SphereShape3D_45flt")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D" unique_id=775946698]
+mesh = SubResource("SphereMesh_45flt")
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=1018276965]
+transform = Transform3D(1, 0, 0, 0, 0.76662445, 0.64209574, 0, -0.64209574, 0.76662445, 0, 9.059549, 0)
+light_color = Color(0.87, 0.84825003, 0.8178, 1)
+shadow_enabled = true
+
+[node name="Backlight" type="DirectionalLight3D" parent="Sun" unique_id=1148535787]
+transform = Transform3D(1, 0, 0, 0, -1, 8.742278e-08, 0, -8.742278e-08, -1, 0, 2, 0)
+light_color = Color(0.9, 0.96833336, 1, 1)
+light_energy = 0.1
+
+[node name="Player" parent="." unique_id=947372061 instance=ExtResource("1_34er5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 17.5)
