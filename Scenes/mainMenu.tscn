@@ -1,0 +1,62 @@
+[gd_scene format=3 uid="uid://duusssv36lwwa"]
+
+[ext_resource type="Script" uid="uid://bmo4gju3oprd7" path="res://Scripts/MainMenu.cs" id="2"]
+[ext_resource type="Texture2D" uid="uid://lgsraixjlych" path="res://icon.svg" id="2_5pknu"]
+
+[node name="mainMenu" type="Control" unique_id=904869524]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2")
+
+[node name="join" type="TextureButton" parent="." unique_id=2077111458]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -205.0
+offset_top = -198.0
+offset_right = -77.0
+offset_bottom = -70.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("2_5pknu")
+
+[node name="server" type="TextureButton" parent="." unique_id=189929682]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 99.0
+offset_top = -74.0
+offset_right = 227.0
+offset_bottom = 54.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("2_5pknu")
+
+[node name="printpeers" type="TextureButton" parent="." unique_id=406559404]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -189.0
+offset_top = 90.0
+offset_right = -61.0
+offset_bottom = 218.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("2_5pknu")
+
+[connection signal="pressed" from="join" to="." method="play"]
+[connection signal="pressed" from="server" to="." method="startServer"]
+[connection signal="pressed" from="printpeers" to="." method="printPeers"]
