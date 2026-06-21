@@ -4,7 +4,11 @@
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_45flt"]
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_45flt"]
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_aj2hm"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_f5lv3"]
+radius = 0.2
+height = 0.8
 
 [node name="CharacterBody3D" type="CharacterBody3D" unique_id=199214572]
 script = ExtResource("1_rpqav")
@@ -18,4 +22,8 @@ keep_aspect = 0
 fov = 90.0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=283101110]
-mesh = SubResource("CapsuleMesh_45flt")
+mesh = SubResource("CapsuleMesh_aj2hm")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="MeshInstance3D" unique_id=1732152000]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, 0.5, -0.4)
+mesh = SubResource("CapsuleMesh_f5lv3")

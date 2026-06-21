@@ -3,44 +3,50 @@
 [ext_resource type="Script" uid="uid://dcrrhmh4qeimy" path="res://Scripts/GameManager.cs" id="1_34er5"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_45flt"]
-height = 0.1
+margin = 0.01
+height = 20.0
 radius = 20.0
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_45flt"]
 top_radius = 20.0
 bottom_radius = 20.0
-height = 0.1
+height = 20.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_f5lv3"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_45flt"]
-
-[sub_resource type="SphereMesh" id="SphereMesh_45flt"]
 
 [node name="Node3D" type="Node3D" unique_id=1296995982]
 script = ExtResource("1_34er5")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=2033174536]
+[node name="Static" type="Node" parent="." unique_id=1983192885]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=1293444176]
+[node name="StaticBody3D" type="StaticBody3D" parent="Static" unique_id=2033174536]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -10, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Static/StaticBody3D" unique_id=1293444176]
 shape = SubResource("CylinderShape3D_45flt")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D" unique_id=748408650]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Static/StaticBody3D" unique_id=748408650]
 mesh = SubResource("CylinderMesh_45flt")
 
-[node name="RigidBody3D" type="RigidBody3D" parent="." unique_id=1643603454]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.62468, 0)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D" unique_id=630678370]
-shape = SubResource("SphereShape3D_45flt")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D" unique_id=775946698]
-mesh = SubResource("SphereMesh_45flt")
-
-[node name="Sun" type="DirectionalLight3D" parent="." unique_id=1018276965]
+[node name="Sun" type="DirectionalLight3D" parent="Static" unique_id=1018276965]
 transform = Transform3D(1, 0, 0, 0, 0.76662445, 0.64209574, 0, -0.64209574, 0.76662445, 0, 9.059549, 0)
 light_color = Color(0.87, 0.84825003, 0.8178, 1)
 shadow_enabled = true
 
-[node name="Backlight" type="DirectionalLight3D" parent="Sun" unique_id=1148535787]
+[node name="Backlight" type="DirectionalLight3D" parent="Static/Sun" unique_id=1148535787]
 transform = Transform3D(1, 0, 0, 0, -1, 8.742278e-08, 0, -8.742278e-08, -1, 0, 2, 0)
 light_color = Color(0.9, 0.96833336, 1, 1)
 light_energy = 0.1
+
+[node name="Dynamic" type="Node" parent="." unique_id=1528907842]
+
+[node name="RigidBody3D" type="RigidBody3D" parent="Dynamic" unique_id=667394977]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Dynamic/RigidBody3D" unique_id=253288163]
+mesh = SubResource("SphereMesh_f5lv3")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Dynamic/RigidBody3D" unique_id=1877915887]
+shape = SubResource("SphereShape3D_45flt")

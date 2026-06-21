@@ -4,8 +4,14 @@ using Godot;
 
 public partial class GameManager : Node
 {
+	public static Node staticParent,
+		dynamicParent;
+
 	public override void _Ready()
 	{
+		staticParent = this.GetNode("Static");
+		dynamicParent = this.GetNode("Dynamic");
+
 		spawnPlayer(Multiplayer.GetUniqueId());
 
 		foreach (int peerId in Multiplayer.GetPeers())
@@ -25,7 +31,7 @@ public partial class GameManager : Node
 			.Load<PackedScene>("res://Scenes/player.tscn")
 			.Instantiate<Player>();
 		player.id = peerId;
-		this.AddChild(player);
+		dynamicParent.AddChild(player);
 		player.Name = "player_" + peerId;
 		player.SetMultiplayerAuthority((int)peerId);
 		Random random = new Random();
@@ -39,7 +45,7 @@ public partial class GameManager : Node
 	public void despawnPlayer(long peerId)
 	{
 		GD.Print("despawning: ", peerId);
-		this.GetNode("player_" + peerId).QueueFree();
+		dynamicParent.GetNode("player_" + peerId).QueueFree();
 	}
 }
 

@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using Godot;
 
 public partial class Player : CharacterBody3D
@@ -17,6 +16,14 @@ public partial class Player : CharacterBody3D
 	{
 		camera = this.GetNode("Camera3D") as Camera3D;
 		camera.Current = id == Multiplayer.GetUniqueId();
+		if (id == Multiplayer.GetUniqueId())
+		{
+			this.GetNode<MeshInstance3D>("MeshInstance3D").CastShadow = MeshInstance3D
+				.ShadowCastingSetting
+				.ShadowsOnly;
+			this.GetNode("MeshInstance3D").GetNode<MeshInstance3D>("MeshInstance3D").CastShadow =
+				MeshInstance3D.ShadowCastingSetting.ShadowsOnly;
+		}
 		Input.MouseMode = Input.MouseModeEnum.Captured;
 		base._Ready();
 	}
@@ -48,8 +55,15 @@ public partial class Player : CharacterBody3D
 				fov = new Vector2(camera.Fov, camera.Fov * viewportSize.Y / viewportSize.X);
 			}
 
-			camera.RotationDegrees +=
-				Vector3.Left * mouseMotion.Relative.Y / viewportSize.Y * fov.Y;
+			camera.RotationDegrees = new Vector3(
+				Math.Clamp(
+					camera.RotationDegrees.X - (mouseMotion.Relative.Y / viewportSize.Y * fov.Y),
+					-65,
+					90
+				),
+				0,
+				0
+			);
 			this.RotationDegrees += Vector3.Down * mouseMotion.Relative.X / viewportSize.X * fov.X;
 		}
 
@@ -57,15 +71,45 @@ public partial class Player : CharacterBody3D
 	}
 
 	[Rpc]
-	public void networkedPosition(Vector3 position)
+	public void shoot(Vector3 euler, Vector3 spin)
+	{
+		RigidBody3D projectile = ResourceLoader
+			.Load<PackedScene>("res://Scenes/projectile.tscn")
+			.Instantiate<RigidBody3D>();
+		GameManager.dynamicParent.AddChild(projectile);
+		projectile.Name = "projectile" + id;
+		projectile.SetMultiplayerAuthority((int)id);
+
+		Basis basis = Basis.FromEuler(euler);
+		projectile.GlobalPosition = camera.GlobalPosition + (basis * Vector3.Forward);
+		projectile.GlobalRotation = euler;
+		projectile.LinearVelocity = projectile.Basis * Vector3.Forward * 25;
+		projectile.AngularVelocity = spin;
+	}
+
+	[Rpc]
+	public void networkedPosition(Vector3 position, Vector3 rotation)
 	{
 		Position = position;
+		Rotation = rotation;
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
 		if (id == Multiplayer.GetUniqueId())
 		{
+			if (Input.IsActionJustPressed("click"))
+			{
+				Random random = new Random();
+				Vector3 spin = new Vector3(
+					(((float)random.Next()) / Int32.MaxValue - 0.5f) * 20,
+					(((float)random.Next()) / Int32.MaxValue - 0.5f) * 20,
+					(((float)random.Next()) / Int32.MaxValue - 0.5f) * 20
+				);
+				shoot(camera.GlobalRotation, spin);
+				Rpc(MethodName.shoot, camera.GlobalRotation, spin);
+			}
+
 			Vector3 velocity = Velocity;
 
 			velocity += GetGravity() * (float)delta;
@@ -96,7 +140,7 @@ public partial class Player : CharacterBody3D
 			Velocity = velocity;
 			MoveAndSlide();
 
-			Rpc(MethodName.networkedPosition, Position);
+			Rpc(MethodName.networkedPosition, Position, Rotation);
 		}
 	}
 }
