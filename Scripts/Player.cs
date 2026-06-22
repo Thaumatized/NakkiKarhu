@@ -23,8 +23,8 @@ public partial class Player : CharacterBody3D
 				.ShadowsOnly;
 			this.GetNode("MeshInstance3D").GetNode<MeshInstance3D>("MeshInstance3D").CastShadow =
 				MeshInstance3D.ShadowCastingSetting.ShadowsOnly;
+			Input.MouseMode = Input.MouseModeEnum.Captured;
 		}
-		Input.MouseMode = Input.MouseModeEnum.Captured;
 		base._Ready();
 	}
 

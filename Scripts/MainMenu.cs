@@ -81,6 +81,21 @@ public partial class MainMenu : Control
 			return 10056;
 	}
 
+	public override void _Process(double delta)
+	{
+		// Scene change after succesful connection to server
+		if (
+			Multiplayer.MultiplayerPeer.GetType().ToString() != "Godot.OfflineMultiplayerPeer"
+			&& Multiplayer.MultiplayerPeer.GetConnectionStatus()
+				== MultiplayerPeer.ConnectionStatus.Connected
+		)
+		{
+			GetTree().ChangeSceneToFile("res://Scenes/match.tscn");
+		}
+
+		base._Process(delta);
+	}
+
 	public void join()
 	{
 		ENetMultiplayerPeer peer = new ENetMultiplayerPeer();
@@ -88,7 +103,7 @@ public partial class MainMenu : Control
 		GD.Print(error);
 		Multiplayer.MultiplayerPeer = peer;
 
-		GetTree().ChangeSceneToFile("res://Scenes/match.tscn");
+		// Scene change handled in _Process
 	}
 
 	public void host()

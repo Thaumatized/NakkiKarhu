@@ -14,6 +14,7 @@ config/name="NakkiKarhu"
 run/main_scene="uid://duusssv36lwwa"
 config/features=PackedStringArray("4.7", "C#", "GL Compatibility")
 config/icon="res://icon.svg"
+run/main_scene.dedicated_server="uid://dm5sbw6au6ym1"
 
 [display]
 
