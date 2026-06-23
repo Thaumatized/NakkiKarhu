@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bkoaei1s3njn"
-path="res://.godot/imported/thailnd.png-5978fcea90e2ea61cf7acc02bfbaa084.ctex"
+uid="uid://5f8w6b4n42rw"
+path="res://.godot/imported/Mexico.png-35566c18f7a4b2781ee8117f12e46037.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://2DTextures/CountryFlags/thailnd.png"
-dest_files=["res://.godot/imported/thailnd.png-5978fcea90e2ea61cf7acc02bfbaa084.ctex"]
+source_file="res://2DTextures/CountryFlags/Raw/Mexico.png"
+dest_files=["res://.godot/imported/Mexico.png-35566c18f7a4b2781ee8117f12e46037.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cname1qbducb"
-path="res://.godot/imported/UnitedStatesOfAmerica.png-77330a12f848c02ae7a96e6f6d8fa50b.ctex"
+uid="uid://bkoaei1s3njn"
+path="res://.godot/imported/Thailand.png-f2621e920e371914cc302ac14f709df5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://2DTextures/CountryFlags/UnitedStatesOfAmerica.png"
-dest_files=["res://.godot/imported/UnitedStatesOfAmerica.png-77330a12f848c02ae7a96e6f6d8fa50b.ctex"]
+source_file="res://2DTextures/CountryFlags/Thailand.png"
+dest_files=["res://.godot/imported/Thailand.png-f2621e920e371914cc302ac14f709df5.ctex"]
 
 [params]
 

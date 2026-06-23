@@ -4,7 +4,8 @@ using Godot;
 public enum Country
 {
 	Finland,
-	UnitedStatesOfAmerica,
+	Mexico,
+	Thailand,
 }
 
 public struct ServerInfo
@@ -37,6 +38,8 @@ public partial class MainMenu : Control
 		new ServerInfo(Country.Finland, "helium.thaumatized.com", 10056),
 		new ServerInfo(Country.Finland, "lithium.thaumatized.com", 10056),
 		new ServerInfo(Country.Finland, "beryllium.thaumatized.com", 10056),
+		new ServerInfo(Country.Mexico, "Mexico.thaumatized.com", 10056),
+		new ServerInfo(Country.Thailand, "Thailand.thaumatized.com", 10056),
 	];
 
 	OptionButton serverSelect;

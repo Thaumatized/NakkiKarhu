@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://hvskrycf11jg"
-path="res://.godot/imported/Finland.png-de9289e2b9868a603354b086c6f05f44.ctex"
+uid="uid://h7y6s025jlo3"
+path="res://.godot/imported/Finland.png-cb692bf65f6711ed30df7b99d7070104.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://2DTextures/CountryFlags/Finland.png"
-dest_files=["res://.godot/imported/Finland.png-de9289e2b9868a603354b086c6f05f44.ctex"]
+source_file="res://2DTextures/CountryFlags/Raw/Finland.png"
+dest_files=["res://.godot/imported/Finland.png-cb692bf65f6711ed30df7b99d7070104.ctex"]
 
 [params]
 

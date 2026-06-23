@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cgwmtg4kn2lou"
-path="res://.godot/imported/mexi.png-b62e9c0b0ae5d87b786b4e09e8a992bb.ctex"
+path="res://.godot/imported/Mexico.png-1253b8511d2b968261cb98f97ac2eb9b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://2DTextures/CountryFlags/mexi.png"
-dest_files=["res://.godot/imported/mexi.png-b62e9c0b0ae5d87b786b4e09e8a992bb.ctex"]
+source_file="res://2DTextures/CountryFlags/Mexico.png"
+dest_files=["res://.godot/imported/Mexico.png-1253b8511d2b968261cb98f97ac2eb9b.ctex"]
 
 [params]
 
