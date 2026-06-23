@@ -139,6 +139,11 @@ public partial class Player : CharacterBody3D
 			Velocity = velocity;
 			MoveAndSlide();
 
+			if(Position.Y < -20)
+			{
+				Position = Vector3.Up * 20;
+			}
+
 			Rpc(MethodName.networkedPosition, Position, Rotation);
 		}
 	}
