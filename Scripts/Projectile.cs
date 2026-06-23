@@ -29,8 +29,19 @@ public partial class Projectile : RigidBody3D
 		this.SetCollisionMaskValue(2, false);
 	}
 
+	[Rpc]
+	public void networkedPosition(Vector3 position, Vector3 rotation)
+	{
+		Position = position;
+		Rotation = rotation;
+	}
+
 	public override void _PhysicsProcess(double delta)
 	{
 		lastVelocity = this.LinearVelocity;
+		if (Multiplayer.GetUniqueId() == 1)
+		{
+			Rpc(MethodName.networkedPosition, Position, Rotation);
+		}
 	}
 }
