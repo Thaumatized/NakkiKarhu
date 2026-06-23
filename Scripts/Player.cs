@@ -117,25 +117,24 @@ public partial class Player : CharacterBody3D
 			{
 				velocity.Y = JumpVelocity;
 			}
+
+			float acceleration = 1;
+			if (!IsOnFloor())
+			{
+				acceleration *= 0.1f;
+			}
+
 			Vector2 inputDir = Input.GetVector(
 				"moveLeft",
 				"moveRight",
 				"moveForward",
 				"moveBackward"
 			);
-			Vector3 direction = (
-				Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)
-			).Normalized();
-			if (direction != Vector3.Zero)
-			{
-				velocity.X = direction.X * Speed;
-				velocity.Z = direction.Z * Speed;
-			}
-			else
-			{
-				velocity.X = Mathf.MoveToward(Velocity.X, 0, Speed);
-				velocity.Z = Mathf.MoveToward(Velocity.Z, 0, Speed);
-			}
+			Vector3 target =
+				(Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized() * Speed;
+
+			velocity.X = Mathf.MoveToward(Velocity.X, target.X, acceleration);
+			velocity.Z = Mathf.MoveToward(Velocity.Z, target.Z, acceleration);
 
 			Velocity = velocity;
 			MoveAndSlide();

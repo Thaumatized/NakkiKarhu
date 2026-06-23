@@ -1,20 +1,26 @@
 [gd_scene format=3 uid="uid://d3aq1abqr72dj"]
 
+[ext_resource type="Script" uid="uid://cg1ik5b0tycbm" path="res://Scripts/Projectile.cs" id="1_f8cdk"]
+[ext_resource type="PackedScene" uid="uid://dmjqucxy3v81e" path="res://Models/nakkii.blend" id="2_yr2qt"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_at5ip"]
+radius = 0.2
+height = 0.6
+
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_rdh6u"]
 margin = 0.001
 radius = 0.1
-height = 0.3
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_0crvu"]
-radius = 0.03
-height = 0.3
+height = 0.6
 
 [node name="RigidBody3D" type="RigidBody3D" unique_id=1781906404]
+script = ExtResource("1_f8cdk")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=70279889]
+[node name="ProjectileCollider" type="CollisionShape3D" parent="." unique_id=70279889]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+shape = SubResource("CapsuleShape3D_at5ip")
+
+[node name="NakkiCollider" type="CollisionShape3D" parent="." unique_id=267817006]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 shape = SubResource("CapsuleShape3D_rdh6u")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1044230825]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
-mesh = SubResource("CapsuleMesh_0crvu")
+[node name="nakkii" parent="." unique_id=1967245109 instance=ExtResource("2_yr2qt")]
