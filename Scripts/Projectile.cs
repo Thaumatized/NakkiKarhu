@@ -10,6 +10,9 @@ public partial class Projectile : RigidBody3D
 
 	public double maxLife = 120;
 	public double life = 0;
+	public double shooterExceptionDuration = 1;
+
+	public Player shooter;
 
 	public override void _Ready()
 	{
@@ -48,9 +51,15 @@ public partial class Projectile : RigidBody3D
 	public override void _PhysicsProcess(double delta)
 	{
 		lastVelocity = this.LinearVelocity;
+		life += delta;
+
+		if (life > shooterExceptionDuration)
+		{
+			RemoveCollisionExceptionWith(shooter);
+		}
+
 		if (Multiplayer.GetUniqueId() == 1)
 		{
-			life += delta;
 			if (life > maxLife)
 			{
 				despawn();

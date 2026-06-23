@@ -58,7 +58,7 @@ public partial class Player : CharacterBody3D
 			camera.RotationDegrees = new Vector3(
 				Math.Clamp(
 					camera.RotationDegrees.X - (mouseMotion.Relative.Y / viewportSize.Y * fov.Y),
-					-65,
+					-90,
 					90
 				),
 				0,
@@ -85,6 +85,9 @@ public partial class Player : CharacterBody3D
 		projectile.GlobalRotation = euler;
 		projectile.LinearVelocity = projectile.Basis * Vector3.Forward * 25;
 		projectile.AngularVelocity = spin;
+
+		((Projectile)projectile).shooter = this;
+		AddCollisionExceptionWith(projectile);
 	}
 
 	[Rpc]
@@ -139,7 +142,7 @@ public partial class Player : CharacterBody3D
 			Velocity = velocity;
 			MoveAndSlide();
 
-			if(Position.Y < -20)
+			if (Position.Y < -20)
 			{
 				Position = Vector3.Up * 20;
 			}

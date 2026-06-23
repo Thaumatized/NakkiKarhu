@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dm5sbw6au6ym1"]
 
 [ext_resource type="Script" uid="uid://dcrrhmh4qeimy" path="res://Scripts/GameManager.cs" id="1_34er5"]
+[ext_resource type="Script" uid="uid://b2yfx5rjq1xb3" path="res://Scripts/SyncedRigidbody3D.cs" id="2_fxjlk"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_45flt"]
 margin = 0.01
@@ -44,6 +45,8 @@ light_energy = 0.1
 
 [node name="RigidBody3D" type="RigidBody3D" parent="Dynamic" unique_id=667394977]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+collision_mask = 7
+script = ExtResource("2_fxjlk")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Dynamic/RigidBody3D" unique_id=253288163]
 mesh = SubResource("SphereMesh_f5lv3")
