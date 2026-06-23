@@ -8,6 +8,9 @@ public partial class Projectile : RigidBody3D
 
 	public Vector3 lastVelocity;
 
+	public double maxLife = 120;
+	public double life = 0;
+
 	public override void _Ready()
 	{
 		this.BodyEntered += onHit;
@@ -36,11 +39,23 @@ public partial class Projectile : RigidBody3D
 		Rotation = rotation;
 	}
 
+	[Rpc]
+	public void despawn()
+	{
+		QueueFree();
+	}
+
 	public override void _PhysicsProcess(double delta)
 	{
 		lastVelocity = this.LinearVelocity;
 		if (Multiplayer.GetUniqueId() == 1)
 		{
+			life += delta;
+			if (life > maxLife)
+			{
+				despawn();
+				Rpc(MethodName.despawn);
+			}
 			Rpc(MethodName.networkedPosition, Position, Rotation);
 		}
 	}
