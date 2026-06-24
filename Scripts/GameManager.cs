@@ -1,40 +1,59 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Godot;
+
+public struct PlayerInfo
+{
+	public long id;
+	public string name;
+
+	public PlayerInfo(long id, string name)
+	{
+		this.id = id;
+		this.name = name;
+	}
+}
 
 public partial class GameManager : Node
 {
 	const int maxPlayers = 32;
 
+	public static PlayerInfo localPlayer = new PlayerInfo(0, "");
+
+	List<PlayerInfo> players = [];
+
 	public static Node staticParent,
 		dynamicParent;
 
-	public bool isServerDedicated;
+	public PlayerInfo getPlayerInfo(long peerId)
+	{
+		return players.Find((PlayerInfo player) => player.id == peerId);
+	}
 
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
-	public void askServerIfItIsDedicated()
+	public void setPlayerProfile(string name)
 	{
-		GD.Print("askServerIfItIsDedicated");
-		RpcId(
-			Multiplayer.GetRemoteSenderId(),
-			MethodName.serverDedicationResponse,
-			OS.HasFeature("dedicated_server")
-		);
+		if(Multiplayer.IsServer())
+		{
+			Rpc(MethodName.setPlayerProfile, Multiplayer.GetRemoteSenderId(), name);
+		}
 	}
 
 	[Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
-	public void serverDedicationResponse(bool dedicated)
+	public void setPlayerProfile(long peerId, string name)
 	{
-		isServerDedicated = dedicated;
-
-		spawnPlayer(Multiplayer.GetUniqueId());
-
-		foreach (int peerId in Multiplayer.GetPeers())
+		GD.Print($"Set player profile {peerId} => {name}");
+		if (players.Exists((PlayerInfo player) => player.id == peerId))
 		{
+			PlayerInfo player = getPlayerInfo(peerId);
+			player.name = name;
+		}
+		else
+		{
+			players.Add(new PlayerInfo(peerId, name));
 			spawnPlayer(peerId);
 		}
-
-		Multiplayer.PeerConnected += spawnPlayer;
-		Multiplayer.PeerDisconnected += despawnPlayer;
 	}
 
 	public override void _Ready()
@@ -68,22 +87,52 @@ public partial class GameManager : Node
 			Multiplayer.MultiplayerPeer = peer;
 		}
 
-		RpcId(1, MethodName.askServerIfItIsDedicated);
+		if (Multiplayer.IsServer())
+		{
+			Multiplayer.PeerConnected += onPlayerConnect;
+		}
+
+		if (localPlayer.id != 0)
+		{
+			Rpc(MethodName.setPlayerProfile, localPlayer.name);
+		}
+
+		Multiplayer.PeerDisconnected += onPlayerDisconnect;
+	}
+
+	public void onPlayerConnect(long peerId)
+	{
+		foreach (PlayerInfo playerInfo in players)
+		{
+			RpcId(peerId, MethodName.setPlayerProfile, playerInfo.id, playerInfo.name);
+		}
+	}
+
+	public void onPlayerDisconnect(long peerId)
+	{
+		GD.Print("despawning: ", peerId);
+		foreach (Node child in dynamicParent.GetChildren())
+		{
+			try
+			{
+				if (((Projectile)child).shooter.playerInfo.id == peerId)
+				{
+					child.QueueFree();
+				}
+			}
+			catch { }
+		}
+		dynamicParent.GetNode("player_" + peerId).QueueFree();
+		players.Remove(getPlayerInfo(peerId));
 	}
 
 	public void spawnPlayer(long peerId)
 	{
-		if (peerId == 1 && isServerDedicated)
-		{
-			GD.Print("Tried to spawn player for server, but is dedicated");
-			return;
-		}
-
 		GD.Print("spawning: ", peerId);
 		Player player = ResourceLoader
 			.Load<PackedScene>("res://Scenes/player.tscn")
 			.Instantiate<Player>();
-		player.id = peerId;
+		player.playerInfo = getPlayerInfo(peerId);
 		dynamicParent.AddChild(player);
 		player.Name = "player_" + peerId;
 		player.SetMultiplayerAuthority((int)peerId);
@@ -94,14 +143,4 @@ public partial class GameManager : Node
 			random.Next() % 10
 		);
 	}
-
-	public void despawnPlayer(long peerId)
-	{
-		GD.Print("despawning: ", peerId);
-		dynamicParent.GetNode("player_" + peerId).QueueFree();
-	}
 }
-
-/*
-	SceneTree.get_network_unique_id()
-*/

@@ -29,3 +29,8 @@ mesh = SubResource("CapsuleMesh_aj2hm")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="MeshInstance3D" unique_id=1732152000]
 transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, 0.5, -0.4)
 mesh = SubResource("CapsuleMesh_f5lv3")
+
+[node name="Label3D" type="Label3D" parent="." unique_id=758018283]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+billboard = 1
+text = "Matti Meikäläinen"

@@ -4,7 +4,7 @@ using Godot;
 
 public partial class Player : CharacterBody3D
 {
-	public long id;
+	public PlayerInfo playerInfo;
 
 	[EditorBrowsable]
 	public const float Speed = 5.0f;
@@ -12,25 +12,35 @@ public partial class Player : CharacterBody3D
 
 	public Camera3D camera;
 
+	public int shotsfired = 0;
+
 	public override void _Ready()
 	{
-		camera = this.GetNode("Camera3D") as Camera3D;
-		camera.Current = id == Multiplayer.GetUniqueId();
-		if (id == Multiplayer.GetUniqueId())
+		GD.Print($"{playerInfo.id} {playerInfo.name}");
+
+		camera = this.GetNode<Camera3D>("Camera3D");
+		camera.Current = playerInfo.id == Multiplayer.GetUniqueId();
+		if (playerInfo.id == Multiplayer.GetUniqueId())
 		{
 			this.GetNode<MeshInstance3D>("MeshInstance3D").CastShadow = MeshInstance3D
 				.ShadowCastingSetting
 				.ShadowsOnly;
 			this.GetNode("MeshInstance3D").GetNode<MeshInstance3D>("MeshInstance3D").CastShadow =
 				MeshInstance3D.ShadowCastingSetting.ShadowsOnly;
+			this.GetNode<Label3D>("Label3D").Text = "";
 			Input.MouseMode = Input.MouseModeEnum.Captured;
 		}
+		else
+		{
+			this.GetNode<Label3D>("Label3D").Text = playerInfo.name;
+		}
+
 		base._Ready();
 	}
 
 	public override void _Input(InputEvent @event)
 	{
-		if (id != Multiplayer.GetUniqueId())
+		if (playerInfo.id != Multiplayer.GetUniqueId())
 			return;
 
 		if (@event.IsActionPressed("click"))
@@ -70,15 +80,14 @@ public partial class Player : CharacterBody3D
 		base._Input(@event);
 	}
 
-	[Rpc]
-	public void shoot(Vector3 euler, Vector3 spin)
+	[Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
+	public void shoot(Vector3 euler, Vector3 spin, int shotId)
 	{
 		RigidBody3D projectile = ResourceLoader
 			.Load<PackedScene>("res://Scenes/projectile.tscn")
 			.Instantiate<RigidBody3D>();
 		GameManager.dynamicParent.AddChild(projectile);
-		projectile.Name = "projectile" + id;
-		projectile.SetMultiplayerAuthority((int)id);
+		projectile.Name = $"projectile_{playerInfo.id}_{shotId}";
 
 		Basis basis = Basis.FromEuler(euler);
 		projectile.GlobalPosition = camera.GlobalPosition + (basis * Vector3.Forward);
@@ -99,7 +108,7 @@ public partial class Player : CharacterBody3D
 
 	public override void _PhysicsProcess(double delta)
 	{
-		if (id == Multiplayer.GetUniqueId())
+		if (playerInfo.id == Multiplayer.GetUniqueId())
 		{
 			if (Input.IsActionJustPressed("click"))
 			{
@@ -109,8 +118,7 @@ public partial class Player : CharacterBody3D
 					(((float)random.Next()) / Int32.MaxValue - 0.5f) * 20,
 					(((float)random.Next()) / Int32.MaxValue - 0.5f) * 20
 				);
-				shoot(camera.GlobalRotation, spin);
-				Rpc(MethodName.shoot, camera.GlobalRotation, spin);
+				Rpc(MethodName.shoot, camera.GlobalRotation, spin, shotsfired++);
 			}
 
 			Vector3 velocity = Velocity;

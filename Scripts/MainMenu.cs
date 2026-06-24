@@ -43,12 +43,14 @@ public partial class MainMenu : Control
 	];
 
 	OptionButton serverSelect;
+	LineEdit nameField;
 	LineEdit ipOrDomainField;
 	LineEdit portField;
 
 	public override void _Ready()
 	{
 		serverSelect = this.GetNode<OptionButton>("serverOption");
+		nameField = this.GetNode<LineEdit>("name");
 		ipOrDomainField = this.GetNode<LineEdit>("IpOrDomain");
 		portField = this.GetNode<LineEdit>("Port");
 
@@ -93,6 +95,7 @@ public partial class MainMenu : Control
 				== MultiplayerPeer.ConnectionStatus.Connected
 		)
 		{
+			GameManager.localPlayer = new PlayerInfo(Multiplayer.GetUniqueId(), nameField.Text);
 			GetTree().ChangeSceneToFile("res://Scenes/match.tscn");
 		}
 
@@ -115,7 +118,7 @@ public partial class MainMenu : Control
 		Error error = peer.CreateServer(getPort(), maxPlayers);
 		GD.Print(error);
 		Multiplayer.MultiplayerPeer = peer;
-
+		GameManager.localPlayer = new PlayerInfo(Multiplayer.GetUniqueId(), nameField.Text);
 		GetTree().ChangeSceneToFile("res://Scenes/match.tscn");
 	}
 
