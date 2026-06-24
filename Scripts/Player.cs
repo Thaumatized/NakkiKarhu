@@ -8,7 +8,7 @@ public partial class Player : CharacterBody3D
 
 	[EditorBrowsable]
 	public const float Speed = 5.0f;
-	public const float JumpVelocity = 4.5f;
+	public const float JumpVelocity = 7f;
 
 	public Camera3D camera;
 
