@@ -34,7 +34,7 @@ public partial class GameManager : Node
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
 	public void setPlayerProfile(string name)
 	{
-		if(Multiplayer.IsServer())
+		if (Multiplayer.IsServer())
 		{
 			Rpc(MethodName.setPlayerProfile, Multiplayer.GetRemoteSenderId(), name);
 		}
