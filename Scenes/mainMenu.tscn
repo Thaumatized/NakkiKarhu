@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bmo4gju3oprd7" path="res://Scripts/MainMenu.cs" id="2"]
 [ext_resource type="Texture2D" uid="uid://lgsraixjlych" path="res://icon.svg" id="2_5pknu"]
+[ext_resource type="AudioStream" uid="uid://ckx840oojuume" path="res://Sounds/Music/Main Menu.mp3" id="3_b7htb"]
 
 [node name="mainMenu" type="Control" unique_id=904869524]
 layout_mode = 3
@@ -79,6 +80,10 @@ offset_bottom = 639.0
 theme_override_font_sizes/font_size = 30
 text = "Quit Game"
 icon = ExtResource("2_5pknu")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1325353366]
+stream = ExtResource("3_b7htb")
+autoplay = true
 
 [connection signal="item_selected" from="serverOption" to="." method="selectServer"]
 [connection signal="pressed" from="JoinCustom" to="." method="join"]
