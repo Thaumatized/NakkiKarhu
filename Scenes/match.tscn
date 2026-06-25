@@ -84,12 +84,15 @@ material = SubResource("StandardMaterial3D_uwtex")
 [node name="Node3D" type="Node3D" unique_id=1296995982]
 script = ExtResource("1_34er5")
 
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1158614382]
+_spawnable_scenes = PackedStringArray("uid://crr2sbsgmu8hy", "uid://d3aq1abqr72dj")
+spawn_path = NodePath("../Dynamic")
+
 [node name="Static" type="Node" parent="." unique_id=1983192885]
 
 [node name="Main Cylinder" type="AnimatableBody3D" parent="Static" unique_id=1900827080]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -10, 0)
 script = ExtResource("2_6sxb0")
-rpm = 12.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Static/Main Cylinder" unique_id=1293444176]
 shape = SubResource("CylinderShape3D_45flt")
@@ -99,6 +102,7 @@ mesh = SubResource("CylinderMesh_45flt")
 
 [node name="TopPlatforms" type="AnimatableBody3D" parent="Static" unique_id=1124116589]
 script = ExtResource("2_6sxb0")
+rpm = 3.0
 
 [node name="RedCollider" type="CollisionShape3D" parent="Static/TopPlatforms" unique_id=1847863313]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 3, 0)
@@ -143,7 +147,7 @@ mesh = SubResource("CylinderMesh_8yfy7")
 
 [node name="Blue" type="AnimatableBody3D" parent="Static" unique_id=270757660]
 script = ExtResource("2_6sxb0")
-rpm = -6.0
+rpm = -3.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Static/Blue" unique_id=192977189]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 1.5, 0)
@@ -155,7 +159,7 @@ mesh = SubResource("CylinderMesh_6sxb0")
 
 [node name="Teal" type="AnimatableBody3D" parent="Static" unique_id=455895104]
 script = ExtResource("2_6sxb0")
-rpm = 9.0
+rpm = 4.5
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Static/Teal" unique_id=2085148469]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, -1.5, 0)

@@ -10,7 +10,7 @@ public partial class Projectile : RigidBody3D
 
 	public double maxLife = 120;
 	public double life = 0;
-	public double shooterExceptionDuration = 1;
+	public double shooterExceptionDuration = 0.1;
 
 	public Player shooter;
 

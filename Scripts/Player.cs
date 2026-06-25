@@ -8,6 +8,7 @@ public partial class Player : CharacterBody3D
 
 	[EditorBrowsable]
 	public const float Speed = 5.0f;
+	public const float projectileSpeed = 15f;
 	public const float JumpVelocity = 7f;
 
 	public Camera3D camera;
@@ -92,7 +93,7 @@ public partial class Player : CharacterBody3D
 		Basis basis = Basis.FromEuler(euler);
 		projectile.GlobalPosition = camera.GlobalPosition + (basis * Vector3.Forward);
 		projectile.GlobalRotation = euler;
-		projectile.LinearVelocity = projectile.Basis * Vector3.Forward * 25;
+		projectile.LinearVelocity = projectile.Basis * Vector3.Forward * projectileSpeed;
 		projectile.AngularVelocity = spin;
 
 		((Projectile)projectile).shooter = this;
