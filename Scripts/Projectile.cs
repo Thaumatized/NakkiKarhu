@@ -6,16 +6,24 @@ public partial class Projectile : RigidBody3D
 	public float force = 10f;
 	public float verticalForce = 10f;
 
+	[Export]
 	public Vector3 lastVelocity;
+
+	[Export]
+	public long playerId;
 
 	public double maxLife = 120;
 	public double life = 0;
-	public double shooterExceptionDuration = 0.1;
+	public double shooterExceptionDuration = 0.5;
 
 	public Player shooter;
 
 	public override void _Ready()
 	{
+		GD.Print($"PROJECTILE SHOOTER ID {playerId}");
+
+		shooter =  GameManager.instance.GetPlayer(playerId);
+		AddCollisionExceptionWith(shooter.characterBody);
 		this.BodyEntered += onHit;
 		this.ContactMonitor = true;
 		this.MaxContactsReported = 1;
@@ -24,28 +32,17 @@ public partial class Projectile : RigidBody3D
 
 	public void onHit(Node body)
 	{
+		GD.Print( $"PROJECTILE HIT {body.Name}");
 		try
 		{
-			Player player = (Player)body;
+			Player player = (Player)body.GetParent();
 			//player.Velocity += (player.Position - this.Position).Normalized() * force + Vector3.Up * verticalForce
-			player.Velocity += this.lastVelocity.Normalized() * force + Vector3.Up * verticalForce;
+			player.characterBody.Velocity +=
+				this.lastVelocity.Normalized() * force + Vector3.Up * verticalForce;
 		}
 		catch { }
 		this.BodyEntered -= onHit;
 		this.SetCollisionMaskValue(2, false);
-	}
-
-	[Rpc]
-	public void networkedPosition(Vector3 position, Vector3 rotation)
-	{
-		Position = position;
-		Rotation = rotation;
-	}
-
-	[Rpc]
-	public void despawn()
-	{
-		QueueFree();
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -55,17 +52,15 @@ public partial class Projectile : RigidBody3D
 
 		if (life > shooterExceptionDuration)
 		{
-			RemoveCollisionExceptionWith(shooter);
+			RemoveCollisionExceptionWith(shooter.characterBody);
 		}
 
 		if (Multiplayer.GetUniqueId() == 1)
 		{
 			if (life > maxLife)
 			{
-				despawn();
-				Rpc(MethodName.despawn);
+				QueueFree();
 			}
-			Rpc(MethodName.networkedPosition, Position, Rotation);
 		}
 	}
 }

@@ -1,47 +1,75 @@
 using System;
-using System.ComponentModel;
 using Godot;
 
-public partial class Player : CharacterBody3D
+public partial class Player : Node
 {
-	public PlayerInfo playerInfo;
+	[Export]
+	public int playerId;
 
-	[EditorBrowsable]
-	public const float Speed = 5.0f;
-	public const float projectileSpeed = 15f;
-	public const float JumpVelocity = 7f;
+	public float Speed = 5.0f;
+	public float projectileSpeed = 15f;
 
+	public float JumpVelocity = 7f;
 	public Camera3D camera;
 
 	public int shotsfired = 0;
+	public CharacterBody3D characterBody;
+
+	public override void _EnterTree()
+	{
+		GD.Print($"Player _EnterTree {playerId.ToString()}");
+
+		characterBody = GetNode<CharacterBody3D>("CharacterBody3D");
+	}
 
 	public override void _Ready()
 	{
-		GD.Print($"{playerInfo.id} {playerInfo.name}");
-
-		camera = this.GetNode<Camera3D>("Camera3D");
-		camera.Current = playerInfo.id == Multiplayer.GetUniqueId();
-		if (playerInfo.id == Multiplayer.GetUniqueId())
+		GD.Print(
+			$"Player _Ready {playerId} == {Multiplayer.GetUniqueId()} => {playerId == Multiplayer.GetUniqueId()}"
+		);
+		camera = characterBody.GetNode<Camera3D>("Camera3D");
+		camera.Current = playerId == Multiplayer.GetUniqueId();
+		GD.Print(camera.Current);
+		if (playerId == Multiplayer.GetUniqueId())
 		{
-			this.GetNode<MeshInstance3D>("MeshInstance3D").CastShadow = MeshInstance3D
+			characterBody.GetNode<MeshInstance3D>("MeshInstance3D").CastShadow = MeshInstance3D
 				.ShadowCastingSetting
 				.ShadowsOnly;
-			this.GetNode("MeshInstance3D").GetNode<MeshInstance3D>("MeshInstance3D").CastShadow =
-				MeshInstance3D.ShadowCastingSetting.ShadowsOnly;
-			this.GetNode<Label3D>("Label3D").Text = "";
-			Input.MouseMode = Input.MouseModeEnum.Captured;
+			characterBody
+				.GetNode("MeshInstance3D")
+				.GetNode<MeshInstance3D>("MeshInstance3D")
+				.CastShadow = MeshInstance3D.ShadowCastingSetting.ShadowsOnly;
+			characterBody.GetNode<Label3D>("Label3D").Text = "";
 		}
 		else
 		{
-			this.GetNode<Label3D>("Label3D").Text = playerInfo.name;
+			characterBody.GetNode<Label3D>("Label3D").Text = "";
 		}
 
-		base._Ready();
+		this.Ready += multiplayerReady;
+	}
+
+	public void multiplayerReady()
+	{
+		this.SetMultiplayerAuthority((int)playerId);
+		//GetNode("MultiplayerSynchronizer").SetMultiplayerAuthority((int)playerId);
+	}
+
+	public void setPlayerName(string name)
+	{
+		characterBody.GetNode<Label3D>("Label3D").Text = name;
+	}
+
+	public override void _Process(double delta)
+	{
+		setPlayerName(GameManager.instance.getPlayerInfo(playerId).name);
+
+		base._Process(delta);
 	}
 
 	public override void _Input(InputEvent @event)
 	{
-		if (playerInfo.id != Multiplayer.GetUniqueId())
+		if (playerId != Multiplayer.GetUniqueId())
 			return;
 
 		if (@event.IsActionPressed("click"))
@@ -75,64 +103,64 @@ public partial class Player : CharacterBody3D
 				0,
 				0
 			);
-			this.RotationDegrees += Vector3.Down * mouseMotion.Relative.X / viewportSize.X * fov.X;
+			characterBody.RotationDegrees +=
+				Vector3.Down * mouseMotion.Relative.X / viewportSize.X * fov.X;
 		}
 
 		base._Input(@event);
 	}
 
-	[Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
-	public void shoot(Vector3 euler, Vector3 spin, int shotId)
+	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
+	public void shoot(Vector3 euler, int shotId)
 	{
-		RigidBody3D projectile = ResourceLoader
-			.Load<PackedScene>("res://Scenes/projectile.tscn")
-			.Instantiate<RigidBody3D>();
-		GameManager.dynamicParent.AddChild(projectile);
-		projectile.Name = $"projectile_{playerInfo.id}_{shotId}";
+		if (Multiplayer.IsServer())
+		{
+			GD.Print($"SHOOT {playerId}");
 
-		Basis basis = Basis.FromEuler(euler);
-		projectile.GlobalPosition = camera.GlobalPosition + (basis * Vector3.Forward);
-		projectile.GlobalRotation = euler;
-		projectile.LinearVelocity = projectile.Basis * Vector3.Forward * projectileSpeed;
-		projectile.AngularVelocity = spin;
+			Random random = new Random();
+			Vector3 spin = new Vector3(
+				(((float)random.Next()) / Int32.MaxValue - 0.5f) * 20,
+				(((float)random.Next()) / Int32.MaxValue - 0.5f) * 20,
+				(((float)random.Next()) / Int32.MaxValue - 0.5f) * 20
+			);
 
-		((Projectile)projectile).shooter = this;
-		AddCollisionExceptionWith(projectile);
-	}
+			RigidBody3D projectile = ResourceLoader
+				.Load<PackedScene>("res://Scenes/projectile.tscn")
+				.Instantiate<RigidBody3D>();
 
-	[Rpc]
-	public void networkedPosition(Vector3 position, Vector3 rotation)
-	{
-		Position = position;
-		Rotation = rotation;
+			projectile.Name = $"projectile_{playerId}_{shotId}";
+
+			((Projectile)projectile).playerId = playerId;
+
+			GameManager.instance.projectileContainer.AddChild(projectile);
+
+			Basis basis = Basis.FromEuler(euler);
+			projectile.GlobalPosition = camera.GlobalPosition + (basis * Vector3.Forward);
+			projectile.GlobalRotation = euler;
+			projectile.LinearVelocity = projectile.Basis * Vector3.Forward * projectileSpeed;
+			projectile.AngularVelocity = spin;
+		}
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
-
-		if (playerInfo.id == Multiplayer.GetUniqueId())
+		if (playerId == Multiplayer.GetUniqueId())
 		{
 			if (Input.IsActionJustPressed("click"))
 			{
-				Random random = new Random();
-				Vector3 spin = new Vector3(
-					(((float)random.Next()) / Int32.MaxValue - 0.5f) * 20,
-					(((float)random.Next()) / Int32.MaxValue - 0.5f) * 20,
-					(((float)random.Next()) / Int32.MaxValue - 0.5f) * 20
-				);
-				Rpc(MethodName.shoot, camera.GlobalRotation, spin, shotsfired++);
+				RpcId(1, MethodName.shoot, camera.GlobalRotation, shotsfired++);
 			}
 
-			Vector3 velocity = Velocity;
+			Vector3 velocity = characterBody.Velocity;
 
-			velocity += GetGravity() * (float)delta;
-			if (Input.IsActionJustPressed("jump") && IsOnFloor())
+			velocity += characterBody.GetGravity() * (float)delta;
+			if (Input.IsActionJustPressed("jump") && characterBody.IsOnFloor())
 			{
 				velocity.Y = JumpVelocity;
 			}
 
 			float acceleration = 1;
-			if (!IsOnFloor())
+			if (!characterBody.IsOnFloor())
 			{
 				acceleration *= 0.1f;
 			}
@@ -144,22 +172,28 @@ public partial class Player : CharacterBody3D
 				"moveBackward"
 			);
 			Vector3 target =
-				(Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized() * Speed;
+				(
+					characterBody.Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)
+				).Normalized() * Speed;
 
-			velocity.X = Mathf.MoveToward(Velocity.X, target.X, acceleration);
-			velocity.Z = Mathf.MoveToward(Velocity.Z, target.Z, acceleration);
+			velocity.X = Mathf.MoveToward(characterBody.Velocity.X, target.X, acceleration);
+			velocity.Z = Mathf.MoveToward(characterBody.Velocity.Z, target.Z, acceleration);
 
-			Velocity = velocity;
-			MoveAndSlide();
+			characterBody.Velocity = velocity;
+			characterBody.MoveAndSlide();
 
-			this.Rotation += Vector3.Up * this.GetPlatformAngularVelocity().Y * (float)delta;
+			characterBody.Rotation +=
+				Vector3.Up * characterBody.GetPlatformAngularVelocity().Y * (float)delta;
 
-			if (Position.Y < -20)
+			if (characterBody.Position.Y < -20)
 			{
-				Position = Vector3.Up * 20;
+				Random random = new Random();
+				characterBody.Position = new Vector3(
+					random.Next() % 10,
+					random.Next() % 10 + 20,
+					random.Next() % 10
+				);
 			}
-
-			Rpc(MethodName.networkedPosition, Position, Rotation);
 		}
 	}
 }

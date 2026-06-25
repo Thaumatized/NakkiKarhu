@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://crr2sbsgmu8hy"]
+[gd_scene format=3 uid="uid://gdpjrp5lcesh"]
 
 [ext_resource type="Script" uid="uid://bccecotbpjgx0" path="res://Scripts/Player.cs" id="1_rpqav"]
 
@@ -10,27 +10,43 @@
 radius = 0.2
 height = 0.8
 
-[node name="CharacterBody3D" type="CharacterBody3D" unique_id=199214572]
-collision_layer = 2
-collision_mask = 3
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_v0iea"]
+properties/0/path = NodePath(".:playerId")
+properties/0/spawn = true
+properties/0/replication_mode = 0
+properties/1/path = NodePath("CharacterBody3D:position")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath("CharacterBody3D:rotation")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+
+[node name="Node" type="Node" unique_id=70322496]
 script = ExtResource("1_rpqav")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1823864490]
+[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=199214572]
+collision_layer = 2
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D" unique_id=1823864490]
 shape = SubResource("CapsuleShape3D_45flt")
 
-[node name="Camera3D" type="Camera3D" parent="." unique_id=446139528]
+[node name="Camera3D" type="Camera3D" parent="CharacterBody3D" unique_id=446139528]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 keep_aspect = 0
 fov = 90.0
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=283101110]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CharacterBody3D" unique_id=283101110]
 mesh = SubResource("CapsuleMesh_aj2hm")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="MeshInstance3D" unique_id=1732152000]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CharacterBody3D/MeshInstance3D" unique_id=1732152000]
 transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, 0.5, -0.4)
 mesh = SubResource("CapsuleMesh_f5lv3")
 
-[node name="Label3D" type="Label3D" parent="." unique_id=758018283]
+[node name="Label3D" type="Label3D" parent="CharacterBody3D" unique_id=758018283]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 billboard = 1
 text = "Matti Meikäläinen"
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=2037468779]
+replication_config = SubResource("SceneReplicationConfig_v0iea")

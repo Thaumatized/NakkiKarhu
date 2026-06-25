@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Godot;
 
 public struct PlayerInfo
@@ -17,18 +16,24 @@ public struct PlayerInfo
 
 public partial class GameManager : Node
 {
-	const int maxPlayers = 32;
-
 	public static PlayerInfo localPlayer = new PlayerInfo(0, "");
 
 	List<PlayerInfo> players = [];
 
-	public static Node staticParent,
-		dynamicParent;
+	[Export]
+	public Node playerContainer,
+		projectileContainer;
 
-	public PlayerInfo getPlayerInfo(long peerId)
+	public static GameManager instance;
+
+	public PlayerInfo getPlayerInfo(long id)
 	{
-		return players.Find((PlayerInfo player) => player.id == peerId);
+		return players.Find((PlayerInfo player) => player.id == id);
+	}
+
+	public Player GetPlayer(long id)
+	{
+		return playerContainer.GetNode<Player>(id.ToString());
 	}
 
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
@@ -36,7 +41,9 @@ public partial class GameManager : Node
 	{
 		if (Multiplayer.IsServer())
 		{
-			Rpc(MethodName.setPlayerProfile, Multiplayer.GetRemoteSenderId(), name);
+			long peerId = Multiplayer.GetRemoteSenderId();
+
+			Rpc(MethodName.setPlayerProfile, peerId, name);
 		}
 	}
 
@@ -52,56 +59,37 @@ public partial class GameManager : Node
 		else
 		{
 			players.Add(new PlayerInfo(peerId, name));
-			spawnPlayer(peerId);
 		}
+		GetPlayer(peerId).setPlayerName(name);
 	}
 
 	public override void _Ready()
 	{
-		staticParent = this.GetNode("Static");
-		dynamicParent = this.GetNode("Dynamic");
+		Input.MouseMode = Input.MouseModeEnum.Captured;
 
-		if (OS.HasFeature("dedicated_server"))
-		{
-			string[] arguments = OS.GetCmdlineUserArgs();
-			int port = 10056;
-			for (int i = 0; i < arguments.Length; i++)
-			{
-				GD.Print($"Argument {i} = {arguments[i]}");
-				if (arguments[i] == "-p")
-				{
-					i++;
-					if (!int.TryParse(arguments[i], out port))
-					{
-						GD.Print($"Parsing {arguments[i]} to port failed");
-						port = 10056;
-					}
-				}
-			}
-
-			GD.Print($"Starting server, port {port}");
-
-			ENetMultiplayerPeer peer = new ENetMultiplayerPeer();
-			Error error = peer.CreateServer(port, maxPlayers);
-			GD.Print(error);
-			Multiplayer.MultiplayerPeer = peer;
-		}
+		instance = this;
 
 		if (Multiplayer.IsServer())
 		{
-			Multiplayer.PeerConnected += onPlayerConnect;
-		}
+			if (!OS.HasFeature("dedicated_server"))
+			{
+				spawnPlayer(Multiplayer.GetUniqueId());
+				Rpc(MethodName.setPlayerProfile, localPlayer.name);
+			}
 
-		if (localPlayer.id != 0)
+			Multiplayer.PeerConnected += onPlayerConnect;
+			Multiplayer.PeerDisconnected += onPlayerDisconnect;
+		}
+		else
 		{
 			Rpc(MethodName.setPlayerProfile, localPlayer.name);
 		}
-
-		Multiplayer.PeerDisconnected += onPlayerDisconnect;
 	}
 
 	public void onPlayerConnect(long peerId)
 	{
+		GD.Print($"Player {peerId} connected");
+		spawnPlayer(peerId);
 		foreach (PlayerInfo playerInfo in players)
 		{
 			RpcId(peerId, MethodName.setPlayerProfile, playerInfo.id, playerInfo.name);
@@ -111,18 +99,18 @@ public partial class GameManager : Node
 	public void onPlayerDisconnect(long peerId)
 	{
 		GD.Print("despawning: ", peerId);
-		foreach (Node child in dynamicParent.GetChildren())
+		foreach (Node child in playerContainer.GetChildren())
 		{
 			try
 			{
-				if (((Projectile)child).shooter.playerInfo.id == peerId)
+				if (((Projectile)child).shooter.playerId == peerId)
 				{
 					child.QueueFree();
 				}
 			}
 			catch { }
 		}
-		dynamicParent.GetNode("player_" + peerId).QueueFree();
+		playerContainer.GetNode(peerId.ToString()).QueueFree();
 		players.Remove(getPlayerInfo(peerId));
 	}
 
@@ -132,15 +120,8 @@ public partial class GameManager : Node
 		Player player = ResourceLoader
 			.Load<PackedScene>("res://Scenes/player.tscn")
 			.Instantiate<Player>();
-		player.playerInfo = getPlayerInfo(peerId);
-		dynamicParent.AddChild(player);
-		player.Name = "player_" + peerId;
-		player.SetMultiplayerAuthority((int)peerId);
-		Random random = new Random();
-		player.Position = new Vector3(
-			random.Next() % 10,
-			random.Next() % 10 + 20,
-			random.Next() % 10
-		);
+		player.Name = peerId.ToString();
+		(player).Set("playerId", peerId);
+		playerContainer.AddChild(player);
 	}
 }
