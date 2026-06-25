@@ -108,6 +108,7 @@ public partial class Player : CharacterBody3D
 
 	public override void _PhysicsProcess(double delta)
 	{
+
 		if (playerInfo.id == Multiplayer.GetUniqueId())
 		{
 			if (Input.IsActionJustPressed("click"))
@@ -149,6 +150,8 @@ public partial class Player : CharacterBody3D
 
 			Velocity = velocity;
 			MoveAndSlide();
+
+			this.Rotation += Vector3.Up * this.GetPlatformAngularVelocity().Y * (float)delta;
 
 			if (Position.Y < -20)
 			{
