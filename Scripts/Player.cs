@@ -100,6 +100,16 @@ public partial class Player : Node
 		base._Input(@event);
 	}
 
+	public Vector3 getSpawnPosition()
+	{
+		Random random = new Random();
+		return new Vector3(
+			(random.Next() % 20) - 10,
+			(random.Next() % 20) + 20,
+			(random.Next() % 20) - 10
+		);
+	}
+
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
 	public void shoot(Vector3 euler, int shotId)
 	{
@@ -176,14 +186,10 @@ public partial class Player : Node
 			characterBody.Rotation +=
 				Vector3.Up * characterBody.GetPlatformAngularVelocity().Y * (float)delta;
 
-			if (characterBody.Position.Y < -20)
+			if (characterBody.Position.Length() > 50)
 			{
-				Random random = new Random();
-				characterBody.Position = new Vector3(
-					random.Next() % 10,
-					random.Next() % 10 + 20,
-					random.Next() % 10
-				);
+				characterBody.Position = getSpawnPosition();
+				characterBody.Velocity = Vector3.Zero;
 			}
 		}
 		else
