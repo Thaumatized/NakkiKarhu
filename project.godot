@@ -13,7 +13,7 @@ config_version=5
 config/name="NakkiKarhu"
 run/main_scene="uid://duusssv36lwwa"
 config/features=PackedStringArray("4.7", "C#", "GL Compatibility")
-config/icon="res://icon.svg"
+config/icon="uid://bqqicqv6h6nti"
 
 [display]
 
