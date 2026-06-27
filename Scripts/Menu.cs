@@ -31,13 +31,13 @@ public partial class Menu : Control
 
 	ServerInfo[] serverInfos =
 	[
-		new ServerInfo(Country.Finland, "localhost", 10056),
-		new ServerInfo(Country.Finland, "localhost", 10057),
 		//new ServerInfo(Country.Finland, "hydrogen.thaumatized.com", 10056),
-		//new ServerInfo(Country.Finland, "helium.thaumatized.com", 10056),
-		//new ServerInfo(Country.Finland, "helium.thaumatized.com", 10057),
+		new ServerInfo(Country.Finland, "helium.thaumatized.com", 10056),
+		new ServerInfo(Country.Finland, "helium.thaumatized.com", 10057),
 		//new ServerInfo(Country.Finland, "lithium.thaumatized.com", 10056),
 		//new ServerInfo(Country.Finland, "beryllium.thaumatized.com", 10056),
+		new ServerInfo(Country.Finland, "localhost", 10056),
+		new ServerInfo(Country.Finland, "localhost", 10057),
 	];
 
 	public const int maxPlayers = 32;
@@ -58,7 +58,20 @@ public partial class Menu : Control
 
 	public override void _Ready()
 	{
-		if (OS.HasFeature("dedicated_server"))
+		foreach (ServerInfo info in serverInfos)
+		{
+			Texture2D flag = ResourceLoader.Load<Texture2D>(
+				"res://2DTextures/CountryFlags/" + info.country.ToString() + ".png"
+			);
+			serverSelect.AddIconItem(flag, info.ipOrDomain);
+		}
+
+		selectServer(0);
+	}
+
+	public override void _Process(double delta)
+	{
+		if (OS.HasFeature("dedicated_server") || OS.HasFeature("test_dedicated_server"))
 		{
 			string[] arguments = OS.GetCmdlineUserArgs();
 			int port = 10056;
@@ -90,20 +103,6 @@ public partial class Menu : Control
 
 			startGame();
 		}
-		else
-		{
-			foreach (ServerInfo info in serverInfos)
-			{
-				Texture2D flag = ResourceLoader.Load<Texture2D>(
-					"res://2DTextures/CountryFlags/" + info.country.ToString() + ".png"
-				);
-				serverSelect.AddIconItem(flag, info.ipOrDomain);
-			}
-
-			selectServer(0);
-		}
-
-		base._Ready();
 	}
 
 	void selectServer(int index)

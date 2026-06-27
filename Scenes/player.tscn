@@ -2,14 +2,6 @@
 
 [ext_resource type="Script" uid="uid://bccecotbpjgx0" path="res://Scripts/Player.cs" id="1_rpqav"]
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_45flt"]
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_aj2hm"]
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_f5lv3"]
-radius = 0.2
-height = 0.8
-
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_v0iea"]
 properties/0/path = NodePath(".:playerId")
 properties/0/spawn = true
@@ -20,9 +12,23 @@ properties/1/replication_mode = 1
 properties/2/path = NodePath("CharacterBody3D:rotation")
 properties/2/spawn = true
 properties/2/replication_mode = 1
+properties/3/path = NodePath(".:networkedVelocity")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_45flt"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_aj2hm"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_f5lv3"]
+radius = 0.2
+height = 0.8
 
 [node name="Node" type="Node" unique_id=70322496]
 script = ExtResource("1_rpqav")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=2037468779]
+replication_config = SubResource("SceneReplicationConfig_v0iea")
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=199214572]
 collision_layer = 2
@@ -47,6 +53,3 @@ mesh = SubResource("CapsuleMesh_f5lv3")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 billboard = 1
 text = "Matti Meikäläinen"
-
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=2037468779]
-replication_config = SubResource("SceneReplicationConfig_v0iea")

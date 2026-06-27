@@ -65,13 +65,14 @@ public partial class GameManager : Node
 
 	public override void _Ready()
 	{
+		GD.Print("I exsists");
 		Input.MouseMode = Input.MouseModeEnum.Captured;
 
 		instance = this;
 
 		if (Multiplayer.IsServer())
 		{
-			if (!OS.HasFeature("dedicated_server"))
+			if (!OS.HasFeature("dedicated_server") && !OS.HasFeature("test_dedicated_server"))
 			{
 				spawnPlayer(Multiplayer.GetUniqueId());
 				Rpc(MethodName.setPlayerProfile, localPlayer.name);

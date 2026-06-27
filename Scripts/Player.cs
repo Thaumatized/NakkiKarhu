@@ -15,9 +15,14 @@ public partial class Player : Node
 	public int shotsfired = 0;
 	public CharacterBody3D characterBody;
 
+	[Export]
+	public Vector3 networkedVelocity;
+
 	public override void _EnterTree()
 	{
+		playerId = int.Parse(Name);
 		GD.Print($"Player _EnterTree {playerId.ToString()}");
+		SetMultiplayerAuthority(playerId);
 
 		characterBody = GetNode<CharacterBody3D>("CharacterBody3D");
 	}
@@ -45,26 +50,11 @@ public partial class Player : Node
 		{
 			characterBody.GetNode<Label3D>("Label3D").Text = "";
 		}
-
-		this.Ready += multiplayerReady;
-	}
-
-	public void multiplayerReady()
-	{
-		this.SetMultiplayerAuthority((int)playerId);
-		//GetNode("MultiplayerSynchronizer").SetMultiplayerAuthority((int)playerId);
 	}
 
 	public void setPlayerName(string name)
 	{
 		characterBody.GetNode<Label3D>("Label3D").Text = name;
-	}
-
-	public override void _Process(double delta)
-	{
-		setPlayerName(GameManager.instance.getPlayerInfo(playerId).name);
-
-		base._Process(delta);
 	}
 
 	public override void _Input(InputEvent @event)
@@ -181,6 +171,7 @@ public partial class Player : Node
 
 			characterBody.Velocity = velocity;
 			characterBody.MoveAndSlide();
+			networkedVelocity = velocity;
 
 			characterBody.Rotation +=
 				Vector3.Up * characterBody.GetPlatformAngularVelocity().Y * (float)delta;
@@ -194,6 +185,11 @@ public partial class Player : Node
 					random.Next() % 10
 				);
 			}
+		}
+		else
+		{
+			characterBody.Velocity = networkedVelocity;
+			characterBody.MoveAndSlide();
 		}
 	}
 }
