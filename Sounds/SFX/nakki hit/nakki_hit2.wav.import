@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://bpg8pgmkwkymv"
+path="res://.godot/imported/nakki_hit2.wav-a0e93846d5f5f14bfa7d5c96e5d8bbcb.sample"
+
+[deps]
+
+source_file="res://Sounds/SFX/nakki hit/nakki_hit2.wav"
+dest_files=["res://.godot/imported/nakki_hit2.wav-a0e93846d5f5f14bfa7d5c96e5d8bbcb.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

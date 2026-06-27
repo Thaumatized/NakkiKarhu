@@ -22,7 +22,7 @@ public partial class Projectile : RigidBody3D
 	{
 		GD.Print($"PROJECTILE SHOOTER ID {playerId}");
 
-		shooter =  GameManager.instance.GetPlayer(playerId);
+		shooter = GameManager.instance.GetPlayer(playerId);
 		AddCollisionExceptionWith(shooter.characterBody);
 		this.BodyEntered += onHit;
 		this.ContactMonitor = true;
@@ -32,17 +32,33 @@ public partial class Projectile : RigidBody3D
 
 	public void onHit(Node body)
 	{
-		GD.Print( $"PROJECTILE HIT {body.Name}");
+		GD.Print($"PROJECTILE HIT {body.Name}");
+
+		Random random = new Random();
 		try
 		{
 			Player player = (Player)body.GetParent();
 			//player.Velocity += (player.Position - this.Position).Normalized() * force + Vector3.Up * verticalForce
 			player.characterBody.Velocity +=
 				this.lastVelocity.Normalized() * force + Vector3.Up * verticalForce;
+
+			AudioStreamPlayer3D gruntAudio = this.GetNode<AudioStreamPlayer3D>(
+				"AudioStreamPlayer3D_grunt"
+			);
+			gruntAudio.Stream = ResourceLoader.Load<AudioStream>(
+				$"res://Sounds/SFX/throw sound + grunt/throw_grunt{((random.Next() % 3) + 1)}.wav"
+			);
+			gruntAudio.Playing = true;
 		}
 		catch { }
 		this.BodyEntered -= onHit;
 		this.SetCollisionMaskValue(2, false);
+
+		AudioStreamPlayer3D audio = this.GetNode<AudioStreamPlayer3D>("AudioStreamPlayer3D");
+		audio.Stream = ResourceLoader.Load<AudioStream>(
+			$"res://Sounds/SFX/nakki hit/nakki_hit{((random.Next() % 3) + 1)}.wav"
+		);
+		audio.Playing = true;
 	}
 
 	public override void _PhysicsProcess(double delta)
