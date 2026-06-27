@@ -31,11 +31,15 @@ public partial class Menu : Control
 
 	ServerInfo[] serverInfos =
 	[
-		//new ServerInfo(Country.Finland, "hydrogen.thaumatized.com", 10056),
+		new ServerInfo(Country.Finland, "hydrogen.thaumatized.com", 10056),
+		new ServerInfo(Country.Finland, "hydrogen.thaumatized.com", 10057),
 		new ServerInfo(Country.Finland, "helium.thaumatized.com", 10056),
 		new ServerInfo(Country.Finland, "helium.thaumatized.com", 10057),
-		//new ServerInfo(Country.Finland, "lithium.thaumatized.com", 10056),
-		//new ServerInfo(Country.Finland, "beryllium.thaumatized.com", 10056),
+		new ServerInfo(Country.Finland, "lithium.thaumatized.com", 10056),
+		new ServerInfo(Country.Finland, "lithium.thaumatized.com", 10057),
+		new ServerInfo(Country.Finland, "beryllium.thaumatized.com", 10056),
+		new ServerInfo(Country.Finland, "beryllium.thaumatized.com", 10057),
+
 		new ServerInfo(Country.Finland, "localhost", 10056),
 		new ServerInfo(Country.Finland, "localhost", 10057),
 	];
@@ -63,7 +67,7 @@ public partial class Menu : Control
 			Texture2D flag = ResourceLoader.Load<Texture2D>(
 				"res://2DTextures/CountryFlags/" + info.country.ToString() + ".png"
 			);
-			serverSelect.AddIconItem(flag, info.ipOrDomain);
+			serverSelect.AddIconItem(flag, $"{info.ipOrDomain}:{info.port}");
 		}
 
 		selectServer(0);
