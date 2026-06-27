@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dcrrhmh4qeimy" path="res://Scripts/GameManager.cs" id="1_34er5"]
 [ext_resource type="Script" uid="uid://jlsculjc058j" path="res://Scripts/Spinner.cs" id="2_6sxb0"]
+[ext_resource type="AudioStream" uid="uid://bqjpwgyyyl8fj" path="res://Sounds/Music/In-Game.mp3" id="2_mvhx4"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_6sxb0"]
 margin = 0.01
@@ -117,6 +118,10 @@ shape = SubResource("CylinderShape3D_6sxb0")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Static/Top-Cylinder" unique_id=1566603]
 mesh = SubResource("CylinderMesh_8yfy7")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="Static" unique_id=269339376]
+stream = ExtResource("2_mvhx4")
+autoplay = true
 
 [node name="Dynamic" type="Node" parent="." unique_id=1528907842]
 
